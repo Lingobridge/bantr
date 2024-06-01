@@ -3,7 +3,7 @@ const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: path.join(__dirname, 'client', 'index.ts'),
+  entry: path.join(__dirname, 'client', 'index.tsx'),
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
@@ -65,6 +65,6 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx', 'ts', 'tsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
 };
