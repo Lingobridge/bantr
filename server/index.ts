@@ -7,6 +7,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware to parse JSON bodies
 app.use(express.json());
 
 // Route to get data from Supabase
@@ -44,7 +45,5 @@ app.post('/data', async (req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`* Server is running on port ${PORT}`);
 });
-
-// NOTE: Need to add 'start' and 'build' script to run this server
