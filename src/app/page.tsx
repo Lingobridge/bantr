@@ -1,113 +1,147 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState } from 'react';
+import { Copy } from 'lucide-react';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/lib/ui/dialog';
+import { Input } from '@/lib/ui/input';
+import { Label } from '@/lib/ui/label';
+import { Button } from '@/lib/ui/button';
+
+const Home: React.FC = () => {
+  const [isOpenStart, setIsOpenStart] = useState(false);
+  const [isOpenJoin, setIsOpenJoin] = useState(false);
+
+  const handleStartAConversation = () => {
+    setIsOpenStart(true);
+  };
+
+  const handleJoinAConversation = () => {
+    setIsOpenJoin(true);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className='relative min-h-screen flex flex-col items-center justify-center'>
+      {/* {!isOpenStart && (
+        <div className='flex flex-col h-screen items-center justify-center space-y-4'>
+          <Button
+            onClick={handleStartAConversation}
+            className='h-14 w-52 bg-gradient-to-tr from-blue-400 to-blue-600 text-white shadow-lg rounded-lg font-bold'
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            Start a Conversation
+          </Button>
+          <Button
+            className='h-14 w-52 bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-lg rounded-lg font-bold'
+            onClick={handleJoinAConversation}
+          >
+            Join a Conversation
+          </Button>
         </div>
+      )} */}
+
+      <div className='flex justify-center items-center p-2'>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant='outline' onClick={handleStartAConversation}>
+              Start a Conversation{' '}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className='sm:max-w-md'>
+            <DialogHeader>
+              <DialogTitle>Share link</DialogTitle>
+              <DialogDescription>
+                Anyone who has this link will be able to join this room.
+              </DialogDescription>
+            </DialogHeader>
+            <div className='flex items-center space-x-2'>
+              <div className='grid flex-1 gap-2'>
+                <Label htmlFor='link' className='sr-only'>
+                  Link
+                </Label>
+                <Input
+                  id='link'
+                  defaultValue='https://localhost:3001/roomcode'
+                  readOnly
+                />
+              </div>
+              <Button type='submit' size='sm' className='px-3'>
+                <span className='sr-only'>Copy</span>
+                <Copy className='h-4 w-4' />
+              </Button>
+            </div>
+            <DialogFooter className='sm:justify-end'>
+              <DialogClose asChild>
+                <div className='flex space-x-2'>
+                  <Button type='button' variant='secondary'>
+                    Close
+                  </Button>
+                  <Button
+                    type='button'
+                    variant='secondary'
+                    className='bg-black text-white'
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className='flex justify-center items-center p-2'>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant='outline' onClick={handleJoinAConversation}>
+              Join a Conversation{' '}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className='sm:max-w-md'>
+            <DialogHeader>
+              <DialogTitle>Enter room code</DialogTitle>
+              <DialogDescription>Join the room with the host</DialogDescription>
+            </DialogHeader>
+            <div className='flex items-center space-x-2'>
+              <div className='grid flex-1 gap-2'>
+                <Label htmlFor='link' className='sr-only'>
+                  Link
+                </Label>
+                <Input
+                  id='link'
+                  defaultValue='https://localhost:3001/roomcode'
+                  readOnly
+                />
+              </div>
+            </div>
+            <DialogFooter className='sm:justify-end'>
+              <DialogClose asChild>
+                <div className='flex '>
+                  <Button type='button' variant='secondary'>
+                    Close
+                  </Button>
+                  <Button
+                    type='button'
+                    variant='secondary'
+                    className='bg-black text-white'
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </main>
   );
-}
+};
+
+export default Home;
