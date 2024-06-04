@@ -25,13 +25,12 @@ const Home: React.FC = () => {
   const [roomId, setRoomId] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const roomIdRef = useRef<HTMLInputElement>(null);
   const handleCopy = () => {
-    if (inputRef.current) {
-      inputRef.current.select();
-      // document.execCommand('copy');
-      // Alternatively, you can use the Clipboard API:
-      navigator.clipboard.writeText(inputRef.current.value);
+    if (roomIdRef.current) {
+      roomIdRef.current.select();
+      // use the Clipboard API:
+      navigator.clipboard.writeText(roomIdRef.current.value);
       alert('Copied to clipboard!');
     }
   };
@@ -90,7 +89,13 @@ const Home: React.FC = () => {
                 <Label htmlFor='link' className='sr-only'>
                   Link
                 </Label>
-                <Input id='link' defaultValue={roomId} readOnly />
+                <Input
+                  id='link'
+                  type='text'
+                  defaultValue={roomId}
+                  ref={roomIdRef}
+                  readOnly
+                />
               </div>
               <Button onClick={handleCopy} size='sm' className='px-3'>
                 <span className='sr-only'>Copy</span>
