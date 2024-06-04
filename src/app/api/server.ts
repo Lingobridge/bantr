@@ -1,7 +1,9 @@
-const next = require('next');
-const express = require('express'); 
-const { createServer: createHttpServer } = require('http');
-const { Server: WebsocketServer } = require('socket.io'); 
+// import { Socket } from 'socket.io-client';
+
+import next from 'next';
+import express, { Request, Response } from 'express';
+import { createServer as createHttpServer } from 'http';
+import { Server as WebsocketServer, Socket } from 'socket.io';
 
 const port = 3001;
 
@@ -16,28 +18,26 @@ const server = express();
 const httpServer = createHttpServer(server);
 
 app.prepare().then(() => {
-    //initialize ws server using http server
-    const io = new WebsocketServer(httpServer);
+  //initialize ws server using http server
+  const io = new WebsocketServer(httpServer);
 
-    io.on('connection', (socket) => {
-        console.log('a user connected');
-        socket.on('client-message', (message) => {
-            console.log(`Message received: ${message}`);
-            // socket.emit('client-message', 'Client message');
-        setTimeout(() => {
-            io.emit('server-message', 'Server message');
-        }, 1000);
+  io.on('connection', (socket: Socket) => {
+    console.log('a user connected');
+    socket.on('client-message', (message: String) => {
+      console.log(`Message received: ${message}`);
+      // socket.emit('client-message', 'Client message');
+      setTimeout(() => {
+        io.emit('server-message', 'Server message');
+      }, 1000);
     });
+  });
 
-    });
+  //use next app router to handle all routes
+  server.all('*', (req: Request, res: Response) => {
+    return handle(req, res);
+  });
 
-    //use next app router to handle all routes
-    server.all('*', (req, res) => {
-        return handle(req, res);
-    });
-
-    httpServer.listen(port, () => {
-        console.log(`Listening on port ${port}`);
-    });
+  httpServer.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+  });
 });
-
