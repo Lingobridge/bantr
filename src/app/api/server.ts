@@ -23,12 +23,26 @@ app.prepare().then(() => {
 
   io.on('connection', (socket: Socket) => {
     console.log('a user connected');
+
+    // Create a room
+    socket.on('create-room', (roomId: string) => {
+      console.log('Creating room:', roomId);
+      socket.join(roomId);
+      socket.emit('room-created', roomId); // Notify the client that the room is created
+    });
+
+    // Handle client messages
     socket.on('client-message', (message: String) => {
       console.log(`Message received: ${message}`);
       // socket.emit('client-message', 'Client message');
       setTimeout(() => {
         io.emit('server-message', 'Server message');
       }, 1000);
+    });
+
+    // Handle disconnect
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
     });
   });
 
