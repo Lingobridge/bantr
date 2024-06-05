@@ -46,13 +46,16 @@ export default function Room() {
       console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
+
     socket.current.on('room-join-confirm', (confirmation: string) => {
       console.log(confirmation);
     });
+
     socket.current.on('user-left-room', (notification: string) => {
       console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
+
     socket.current.on('new-message', (message: string) => {
       console.log(`Someone sent a message: ${message}`);
       setMessages((prevMessages) => [...prevMessages, message]);
@@ -84,10 +87,6 @@ export default function Room() {
     const message = messageRef.current?.value;
     if (message && socket.current) {
       socket.current.emit('send-message', { username, message });
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        `${username}: ${message}`,
-      ]);
       if (messageRef.current) messageRef.current.value = '';
     }
   };

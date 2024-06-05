@@ -50,7 +50,7 @@ app.prepare().then(() => {
     });
 
     // Handle client messages
-    socket.on('client-message', (data) => {
+    socket.on('send-message', (data) => {
       const { username, message } = data;
       console.log(`User ${username} sent message: ${message}`);
       io.to(roomId).emit('new-message', `${username}: ${message}`);
