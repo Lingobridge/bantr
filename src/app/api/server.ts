@@ -27,27 +27,28 @@ app.prepare().then(() => {
   const io = new WebsocketServer(httpServer);
 
   io.on('connection', (socket) => {
-    console.log('a user connected');
-
+    //Create (or join) room channel and confirm back to client.
+    const roomId = socket.handshake.query.roomId;
+    socket.join(roomId);
+    socket.emit('room-join-confirm', `You have joined room: ${roomId}`);
+    socket.broadcast.to(roomId).emit('new-user-joined', `New user joined your room: ${roomId}`);
     // Create a room
-    socket.on('create-room', (roomId) => {
-      console.log('Creating room:', roomId);
-      socket.join(roomId);
-      socket.emit('room-created', roomId); // Notify the client that the room is created
-    });
+    // socket.on('create-room', (roomId) => {
+    //   console.log('Creating room:', roomId);
+    //   socket.join(roomId);
+    //   socket.emit('room-created', roomId); // Notify the client that the room is created
+    // });
 
     // Handle client messages
     socket.on('client-message', (message) => {
-      console.log(`Message received: ${message}`);
-      // socket.emit('client-message', 'Client message');
-      setTimeout(() => {
-        io.emit('server-message', 'Server message');
-      }, 1000);
+      console.log(`User sent message: ${message}`);
+      socket.broadcast.to(roomId).emit('new-message', message);
     });
 
     // Handle disconnect
     socket.on('disconnect', () => {
-      console.log('user disconnected');
+      console.log(`User disconnected from room: ${roomId}`);
+      io.to(roomId).emit('user-left-room', `User left room: ${roomId}`);
     });
   });
 
