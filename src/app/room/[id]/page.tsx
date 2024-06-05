@@ -7,6 +7,7 @@ import { AiOutlineAudio } from 'react-icons/ai';
 import { MdAddCircleOutline } from 'react-icons/md';
 import { AiTwotoneSmile } from 'react-icons/ai';
 import { AiOutlineBars } from 'react-icons/ai';
+import { FiSend } from 'react-icons/fi';
 
 import { Input } from '@/lib/ui/input';
 
@@ -69,15 +70,19 @@ export default function Room() {
       <div className='h-96'></div>
 
       <div className='fixed bottom-0 h-16 w-full flex flex-row justify-center items-center bg-slate-200 border'>
-        <AiOutlineAudio className='w-12 text-center text-2xl mr-2' />
-        <Input
-          id='messageid'
-          type='text'
-          ref={messageRef}
-          className='w-full border-t overflow-y-auto'
-          placeholder='Type a message...'
-        ></Input>
-        <AiTwotoneSmile className='w-10 text-center text-2xl ml-2' />
+        <AiOutlineAudio className='w-12 text-center text-2xl mx-2' />
+        <div className='w-11/12 flex flex-row justify-center items-center'>
+          <Input
+            id='messageid'
+            type='text'
+            ref={messageRef}
+            className='w-full border-t overflow-y-auto'
+            placeholder='Type a message...'
+          ></Input>
+          <FiSend className='w-10 text-center text-xl' />
+        </div>
+
+        <AiTwotoneSmile className='w-10 text-center text-2xl mx-2' />
         <MdAddCircleOutline className='w-10 text-center text-2xl' />
       </div>
     </main>

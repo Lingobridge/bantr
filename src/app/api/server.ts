@@ -44,7 +44,7 @@ app.prepare().then(() => {
     // });
 
     // Handle client messages
-    socket.on('client-message', (message: string) => {
+    socket.on('client-message', (message) => {
       console.log(`User sent message: ${message}`);
       socket.broadcast.to(roomId).emit('new-message', message);
     });
@@ -57,7 +57,7 @@ app.prepare().then(() => {
   });
 
   //use next app router to handle all routes
-  server.all('*', (req: Request, res: Response) => {
+  server.all('*', (req, res) => {
     return handle(req, res);
   });
 
