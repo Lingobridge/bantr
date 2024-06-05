@@ -44,13 +44,13 @@ app.prepare().then(() => {
     // });
 
     // Set user name
-    socket.on('set-username', (username: String) => {
+    socket.on('set-username', (username) => {
       socket.username = username;
       io.to(roomId).emit('new-user-joined', `${username} has joined the room`);
     });
 
     // Handle client messages
-    socket.on('client-message', (message: String) => {
+    socket.on('client-message', (message) => {
       console.log(`User sent message: ${message}`);
       socket.broadcast.to(roomId).emit('new-message', message);
     });
