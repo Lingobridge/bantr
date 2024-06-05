@@ -43,8 +43,14 @@ app.prepare().then(() => {
     //   socket.emit('room-created', roomId); // Notify the client that the room is created
     // });
 
+    // Set user name
+    socket.on('set-username', (username: String) => {
+      socket.username = username;
+      io.to(roomId).emit('new-user-joined', `${username} has joined the room`);
+    });
+
     // Handle client messages
-    socket.on('client-message', (message) => {
+    socket.on('client-message', (message: String) => {
       console.log(`User sent message: ${message}`);
       socket.broadcast.to(roomId).emit('new-message', message);
     });
