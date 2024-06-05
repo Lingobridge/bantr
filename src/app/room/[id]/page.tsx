@@ -5,17 +5,16 @@ import React, {useState, useEffect, useRef} from "react";
 import { useParams } from "next/navigation";
 
 export default function Room () {
-    const socketInstance = useRef<Socket | null>(null);
+    const socket = useRef<Socket | null>(null);
     const params = useParams<{ id: string }>();
   
     useEffect(() => {
         //create new websocket connection with host server and set socket to new socket instance
-        const socket = io();
-        socketInstance.current = socket;
+        socket.current = io(); 
 
         return () => {
             //disconnect socket when Room unmounts
-            if (socketInstance.current) socketInstance.current.disconnect();
+            if (socket.current) socket.current.disconnect();
         }
     }, []);
 
