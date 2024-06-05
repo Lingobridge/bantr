@@ -33,9 +33,9 @@ app.prepare().then(() => {
     const roomId = socket.handshake.query.roomId;
     socket.join(roomId);
     socket.emit('room-join-confirm', `You have joined room: ${roomId}`);
-    socket.broadcast
-      .to(roomId)
-      .emit('new-user-joined', `New user joined your room: ${roomId}`);
+    // socket.broadcast
+    //   .to(roomId)
+    //   .emit('new-user-joined', `New user joined your room: ${roomId}`);
     // Create a room
     // socket.on('create-room', (roomId) => {
     //   console.log('Creating room:', roomId);
@@ -44,21 +44,22 @@ app.prepare().then(() => {
     // });
 
     // Set user name
-    socket.on('set-username', (username: String) => {
+    socket.on('set-username', (username) => {
       socket.username = username;
       io.to(roomId).emit('new-user-joined', `${username} has joined the room`);
     });
 
     // Handle client messages
-    socket.on('client-message', (message: String) => {
-      console.log(`User sent message: ${message}`);
-      socket.broadcast.to(roomId).emit('new-message', message);
+    socket.on('client-message', (data) => {
+      const { username, message } = data;
+      console.log(`User ${username} sent message: ${message}`);
+      io.to(roomId).emit('new-message', `${username}: ${message}`);
     });
 
     // Handle disconnect
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (username) => {
       console.log(`User disconnected from room: ${roomId}`);
-      io.to(roomId).emit('user-left-room', `User left room: ${roomId}`);
+      io.to(roomId).emit('user-left-room', `${username} left room.`);
     });
   });
 

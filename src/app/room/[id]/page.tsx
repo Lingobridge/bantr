@@ -36,6 +36,8 @@ export default function Room() {
 
   useEffect(() => {
     //create new websocket connection with host server and set socket to new socket instance
+    if (!params?.id) return;
+
     socket.current = io({
       query: { roomId: params.id },
     } as SocketOptions);
@@ -98,15 +100,13 @@ export default function Room() {
             <DialogHeader>
               <DialogTitle>Enter your name</DialogTitle>
             </DialogHeader>
-            <div className='flex items-center space-x-2'>
-              <Input
-                id='name'
-                type='text'
-                value={username}
-                placeholder='Your name'
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
+            <Input
+              id='name'
+              type='text'
+              value={username}
+              placeholder='Your name'
+              onChange={(e) => setUsername(e.target.value)}
+            />
             <DialogFooter className='sm:justify-end'>
               <Button
                 type='button'

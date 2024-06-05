@@ -49,24 +49,11 @@ const Home: React.FC = () => {
 
   const handleJoinAConversation = () => {
     setIsOpenJoin(true);
-    // const userId = prompt('Enter your user ID') || '';
-    // setUserId(userId);
-    // socket.emit('join-room', roomId, userId);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomId(event.target.value);
   };
-
-  // useEffect(() => {
-  //   socket.on('user-connected', (userId) => {
-  //     console.log(`User connected: ${userId}`);
-  //   });
-
-  //   socket.on('user-disconnected', (userId) => {
-  //     console.log(`User disconnected: ${userId}`);
-  //   });
-  // }, []);
 
   return (
     <main className='relative min-h-screen flex flex-col items-center justify-center'>
