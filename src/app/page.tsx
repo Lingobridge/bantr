@@ -16,6 +16,7 @@ import { Input } from '../lib/ui/input';
 import { Label } from '../lib/ui/label';
 import { Button } from '../lib/ui/button';
 import axios from 'axios';
+import Link from 'next/link';
 
 // import socket from '../lib/socket';
 
@@ -48,11 +49,14 @@ const Home: React.FC = () => {
 
   const handleJoinAConversation = () => {
     setIsOpenJoin(true);
-
     // const userId = prompt('Enter your user ID') || '';
     // setUserId(userId);
     // socket.emit('join-room', roomId, userId);
   };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRoomId(event.target.value);
+  }
 
   // useEffect(() => {
   //   socket.on('user-connected', (userId) => {
@@ -111,7 +115,7 @@ const Home: React.FC = () => {
                   <Button
                     type='button'
                     variant='secondary'
-                    className='bg-black text-white'
+                    className='bg-black text-white hover:bg-gray-300 hover:text-black'
                   >
                     Submit
                   </Button>
@@ -143,7 +147,11 @@ const Home: React.FC = () => {
                 <Label htmlFor='link' className='sr-only'>
                   Link
                 </Label>
-                <Input id='roomid' />
+                <Input 
+                  id='roomid'
+                  type='text'
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
             <DialogFooter className='sm:justify-end'>
@@ -152,13 +160,16 @@ const Home: React.FC = () => {
                   <Button type='button' variant='secondary'>
                     Close
                   </Button>
-                  <Button
-                    type='button'
-                    variant='secondary'
-                    className='bg-black text-white'
-                  >
-                    Submit
-                  </Button>
+                  <Link href={`/room/${roomId}`}>                  
+                    <Button
+                      type='button'
+                      variant='secondary'
+                      onClick={handleJoinAConversation}
+                      className='bg-black text-white hover:bg-gray-300 hover:text-black'
+                    >
+                      Submit
+                    </Button>
+                  </Link>
                 </div>
               </DialogClose>
             </DialogFooter>

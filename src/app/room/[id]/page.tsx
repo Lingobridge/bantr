@@ -1,22 +1,26 @@
 'use client';
 
-import { io } from "socket.io-client";
-import React, {useState, useEffect} from "react";
+import { io, Socket } from "socket.io-client";
+import React, {useState, useEffect, useRef} from "react";
+import { useParams } from "next/navigation";
 
 export default function Room () {
-    const [message, setMessage] = useState('TESTING H1');
-    
+    const socketInstance = useRef<Socket | null>(null);
+    const params = useParams<{ id: string }>();
+  
     useEffect(() => {
+        //create new websocket connection with host server and set socket to new socket instance
         const socket = io();
-        socket.emit('client-message', 'client message');
-        socket.on('server-message', (message) => {
-            console.log(`Message received ${message}`)
-            setMessage(message);
-        })
+        socketInstance.current = socket;
+
+        return () => {
+            //disconnect socket when Room unmounts
+            if (socketInstance.current) socketInstance.current.disconnect();
+        }
     }, []);
 
     return (
-        <h1>{message}</h1>
+        <h1></h1>
     );
 }
 
