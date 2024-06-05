@@ -1,5 +1,7 @@
 // import { Socket } from 'socket.io-client';
 
+// import { Socket } from 'socket.io-client';
+
 // import next from 'next';
 // import express, { Request, Response } from 'express';
 // import { createServer as createHttpServer } from 'http';
@@ -8,7 +10,7 @@
 const next = require('next');
 const express = require('express');
 const { createServer: createHttpServer } = require('http');
-const { Server: WebsocketServer } = require('socket.io');
+const { Server: WebsocketServer } = require('socket.io'); //npm install @types/socket.io --save-dev
 
 const port = 3001;
 
@@ -30,14 +32,14 @@ app.prepare().then(() => {
     console.log('a user connected');
 
     // Create a room
-    socket.on('create-room', (roomId) => {
+    socket.on('create-room', (roomId: string) => {
       console.log('Creating room:', roomId);
       socket.join(roomId);
       socket.emit('room-created', roomId); // Notify the client that the room is created
     });
 
     // Handle client messages
-    socket.on('client-message', (message) => {
+    socket.on('client-message', (message: string) => {
       console.log(`Message received: ${message}`);
       // socket.emit('client-message', 'Client message');
       setTimeout(() => {
@@ -52,7 +54,7 @@ app.prepare().then(() => {
   });
 
   //use next app router to handle all routes
-  server.all('*', (req, res) => {
+  server.all('*', (req: Request, res: Response) => {
     return handle(req, res);
   });
 
