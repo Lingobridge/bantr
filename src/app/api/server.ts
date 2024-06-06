@@ -42,6 +42,7 @@ app.prepare().then(() => {
 
     // Set user name
     socket.on('set-username', (username) => {
+    socket.on('set-username', (username) => {
       socket.username = username;
       io.to(roomId).emit('new-user-joined', `${username} has joined the room`);
     });
