@@ -60,6 +60,7 @@ app.prepare().then(() => {
       io.to(roomId).emit('user-left-room', `${username} left room.`);
     });
   });
+      });
 
   //use next app router to handle all routes
   server.all('*', (req, res) => {
