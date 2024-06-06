@@ -40,7 +40,7 @@ app.prepare().then(() => {
     //   socket.emit('room-created', roomId); // Notify the client that the room is created
     // });
 
-    // Set user name
+    // Set username
     socket.on('set-username', (username) => {
       socket.on('set-username', (username) => {
         socket.username = username;
