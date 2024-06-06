@@ -40,7 +40,6 @@ const Home: React.FC = () => {
     setIsOpenStart(true);
     try {
       const response = await axios.post('/api/room');
-      console.log('>>> generated roomid: ', response);
       setRoomId(response.data.roomId);
     } catch (err) {
       console.error('Error creating room:', err);
