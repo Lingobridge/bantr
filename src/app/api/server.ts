@@ -42,22 +42,26 @@ app.prepare().then(() => {
 
     // Set user name
     socket.on('set-username', (username) => {
-    socket.on('set-username', (username) => {
-      socket.username = username;
-      io.to(roomId).emit('new-user-joined', `${username} has joined the room`);
-    });
+      socket.on('set-username', (username) => {
+        socket.username = username;
+        io.to(roomId).emit(
+          'new-user-joined',
+          `${username} has joined the room`
+        );
+      });
 
-    // Handle client messages
-    socket.on('send-message', (data) => {
-      const { username, message } = data;
-      console.log(`User ${username} sent message: ${message}`);
-      io.to(roomId).emit('new-message', `${username}: ${message}`);
-    });
+      // Handle client messages
+      socket.on('send-message', (data) => {
+        const { username, message } = data;
+        console.log(`User ${username} sent message: ${message}`);
+        io.to(roomId).emit('new-message', `${username}: ${message}`);
+      });
 
-    // Handle disconnect
-    socket.on('disconnect', (username) => {
-      console.log(`User disconnected from room: ${roomId}`);
-      io.to(roomId).emit('user-left-room', `${username} left room.`);
+      // Handle disconnect
+      socket.on('disconnect', (username) => {
+        console.log(`User disconnected from room: ${roomId}`);
+        io.to(roomId).emit('user-left-room', `${username} left room.`);
+      });
     });
   });
 
