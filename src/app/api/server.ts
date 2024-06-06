@@ -1,5 +1,7 @@
 // import { Socket } from 'socket.io-client';
 
+// import { Socket } from 'socket.io-client';
+
 // import next from 'next';
 // import express, { Request, Response } from 'express';
 // import { createServer as createHttpServer } from 'http';
@@ -8,7 +10,7 @@
 const next = require('next');
 const express = require('express');
 const { createServer: createHttpServer } = require('http');
-const { Server: WebsocketServer } = require('socket.io');
+const { Server: WebsocketServer } = require('socket.io'); //npm install @types/socket.io --save-dev
 
 const port = 3001;
 
@@ -31,13 +33,21 @@ app.prepare().then(() => {
     const roomId = socket.handshake.query.roomId;
     socket.join(roomId);
     socket.emit('room-join-confirm', `You have joined room: ${roomId}`);
-    socket.broadcast.to(roomId).emit('new-user-joined', `New user joined your room: ${roomId}`);
+    socket.broadcast
+      .to(roomId)
+      .emit('new-user-joined', `New user joined your room: ${roomId}`);
     // Create a room
     // socket.on('create-room', (roomId) => {
     //   console.log('Creating room:', roomId);
     //   socket.join(roomId);
     //   socket.emit('room-created', roomId); // Notify the client that the room is created
     // });
+
+    // Set user name
+    socket.on('set-username', (username) => {
+      socket.username = username;
+      io.to(roomId).emit('new-user-joined', `${username} has joined the room`);
+    });
 
     // Handle client messages
     socket.on('client-message', (message) => {

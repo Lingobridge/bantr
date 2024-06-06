@@ -56,7 +56,7 @@ const Home: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomId(event.target.value);
-  }
+  };
 
   // useEffect(() => {
   //   socket.on('user-connected', (userId) => {
@@ -112,13 +112,15 @@ const Home: React.FC = () => {
                   <Button type='button' variant='secondary'>
                     Close
                   </Button>
-                  <Button
-                    type='button'
-                    variant='secondary'
-                    className='bg-black text-white hover:bg-gray-300 hover:text-black'
-                  >
-                    Submit
-                  </Button>
+                  <Link href={`/room/${roomId}`}>
+                    <Button
+                      type='button'
+                      variant='secondary'
+                      className='bg-black text-white hover:bg-gray-300 hover:text-black'
+                    >
+                      Submit
+                    </Button>
+                  </Link>
                 </div>
               </DialogClose>
             </DialogFooter>
@@ -147,11 +149,7 @@ const Home: React.FC = () => {
                 <Label htmlFor='link' className='sr-only'>
                   Link
                 </Label>
-                <Input 
-                  id='roomid'
-                  type='text'
-                  onChange={handleInputChange}
-                />
+                <Input id='roomid' type='text' onChange={handleInputChange} />
               </div>
             </div>
             <DialogFooter className='sm:justify-end'>
@@ -160,7 +158,7 @@ const Home: React.FC = () => {
                   <Button type='button' variant='secondary'>
                     Close
                   </Button>
-                  <Link href={`/room/${roomId}`}>                  
+                  <Link href={`/room/${roomId}`}>
                     <Button
                       type='button'
                       variant='secondary'
