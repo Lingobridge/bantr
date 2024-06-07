@@ -40,7 +40,6 @@ const Home: React.FC = () => {
     setIsOpenStart(true);
     try {
       const response = await axios.post('/api/room');
-      console.log('>>> generated roomid: ', response);
       setRoomId(response.data.roomId);
     } catch (err) {
       console.error('Error creating room:', err);
@@ -49,24 +48,11 @@ const Home: React.FC = () => {
 
   const handleJoinAConversation = () => {
     setIsOpenJoin(true);
-    // const userId = prompt('Enter your user ID') || '';
-    // setUserId(userId);
-    // socket.emit('join-room', roomId, userId);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomId(event.target.value);
-  }
-
-  // useEffect(() => {
-  //   socket.on('user-connected', (userId) => {
-  //     console.log(`User connected: ${userId}`);
-  //   });
-
-  //   socket.on('user-disconnected', (userId) => {
-  //     console.log(`User disconnected: ${userId}`);
-  //   });
-  // }, []);
+  };
 
   return (
     <main className='relative min-h-screen flex flex-col items-center justify-center'>
@@ -112,13 +98,15 @@ const Home: React.FC = () => {
                   <Button type='button' variant='secondary'>
                     Close
                   </Button>
-                  <Button
-                    type='button'
-                    variant='secondary'
-                    className='bg-black text-white hover:bg-gray-300 hover:text-black'
-                  >
-                    Submit
-                  </Button>
+                  <Link href={`/room/${roomId}`}>
+                    <Button
+                      type='button'
+                      variant='secondary'
+                      className='bg-black text-white hover:bg-gray-300 hover:text-black'
+                    >
+                      Submit
+                    </Button>
+                  </Link>
                 </div>
               </DialogClose>
             </DialogFooter>
@@ -147,11 +135,7 @@ const Home: React.FC = () => {
                 <Label htmlFor='link' className='sr-only'>
                   Link
                 </Label>
-                <Input 
-                  id='roomid'
-                  type='text'
-                  onChange={handleInputChange}
-                />
+                <Input id='roomid' type='text' onChange={handleInputChange} />
               </div>
             </div>
             <DialogFooter className='sm:justify-end'>
@@ -160,7 +144,7 @@ const Home: React.FC = () => {
                   <Button type='button' variant='secondary'>
                     Close
                   </Button>
-                  <Link href={`/room/${roomId}`}>                  
+                  <Link href={`/room/${roomId}`}>
                     <Button
                       type='button'
                       variant='secondary'
