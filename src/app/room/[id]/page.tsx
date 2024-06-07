@@ -318,7 +318,6 @@ export default function Room() {
         {messages.map((msg, index) => (
           <div key={index} className='mb-2'>
             <span>{msg}</span>
-            <span>{msg}</span>
           </div>
         ))}
       </div>
