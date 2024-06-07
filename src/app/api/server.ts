@@ -5,12 +5,14 @@
 // import { createServer as createHttpServer } from 'http';
 // import { Server as WebsocketServer, Socket } from 'socket.io';
 
+require('dotenv').config();
+
 const next = require('next');
 const express = require('express');
 const { createServer: createHttpServer } = require('http');
 const { Server: WebsocketServer } = require('socket.io');
 
-const port = 3001;
+const port = process.env.PORT || 3000;
 
 //initialize next app and create handler to retain app router functionality
 const dev = process.env.NODE_ENV !== 'production';
@@ -26,18 +28,18 @@ app.prepare().then(() => {
   //initialize ws server using http server
   const io = new WebsocketServer(httpServer);
 
-  io.on('connection', (socket) => {
+  io.on('connection', socket => {
     console.log('a user connected');
 
     // Create a room
-    socket.on('create-room', (roomId) => {
+    socket.on('create-room', roomId => {
       console.log('Creating room:', roomId);
       socket.join(roomId);
       socket.emit('room-created', roomId); // Notify the client that the room is created
     });
 
     // Handle client messages
-    socket.on('client-message', (message) => {
+    socket.on('client-message', message => {
       console.log(`Message received: ${message}`);
       // socket.emit('client-message', 'Client message');
       setTimeout(() => {
