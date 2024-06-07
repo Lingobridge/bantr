@@ -63,13 +63,14 @@ app.prepare().then(() => {
       });
     });
   });
-});
 
-//use next app router to handle all routes
-server.all('*', (req, res) => {
-  return handle(req, res);
-});
 
-httpServer.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+  //use next app router to handle all routes
+  server.all('*', (req, res) => {
+    return handle(req, res);
+  });
+
+  httpServer.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+  });
 });
