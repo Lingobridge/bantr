@@ -64,7 +64,6 @@ app.prepare().then(() => {
       });
     });
   });
-      });
 
   //use next app router to handle all routes
   server.all('*', (req, res) => {
