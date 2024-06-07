@@ -27,7 +27,7 @@ return (
 
     <Card className={cn("w-[380px]")}>
       <CardHeader>
-        <CardTitle>Notifications</CardTitle>
+        <CardTitle>{}</CardTitle>
         <CardDescription>You have 3 unread messages.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
