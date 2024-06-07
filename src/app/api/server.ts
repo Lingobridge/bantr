@@ -43,37 +43,33 @@ app.prepare().then(() => {
     // });
 
     // Set username
-    socket.on('set-username', (username) => {
-      socket.on('set-username', (username) => {
+    socket.on('set-username', username => {
+      socket.on('set-username', username => {
         socket.username = username;
-        io.to(roomId).emit(
-          'new-user-joined',
-          `${username} has joined the room`
-        );
+        io.to(roomId).emit('new-user-joined', `${username} has joined the room`);
       });
 
       // Handle client messages
-      socket.on('send-message', (data) => {
+      socket.on('send-message', data => {
         const { username, message } = data;
         console.log(`User ${username} sent message: ${message}`);
         io.to(roomId).emit('new-message', `${username}: ${message}`);
       });
 
       // Handle disconnect
-      socket.on('disconnect', (username) => {
+      socket.on('disconnect', username => {
         console.log(`User disconnected from room: ${roomId}`);
         io.to(roomId).emit('user-left-room', `${username} left room.`);
       });
     });
   });
-      });
+});
 
-  //use next app router to handle all routes
-  server.all('*', (req, res) => {
-    return handle(req, res);
-  });
+//use next app router to handle all routes
+server.all('*', (req, res) => {
+  return handle(req, res);
+});
 
-  httpServer.listen(port, () => {
-    console.log(`Listening on port ${port}`);
-  });
+httpServer.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });
