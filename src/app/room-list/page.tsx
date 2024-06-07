@@ -1,50 +1,70 @@
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
-
-  import { cn } from "@/lib/utils"
-
-  const rooms = [{
+import RoomCard from "./Components/RoomCard"
+import { Button } from '@/lib/ui/button';
+  const rooms = [
+    {
     roomTopic: "Dogs",
-    roomId: 1
+    description: "A Room to discuss why dogs are better than cats",
+    roomId: "12345"
   },
   {
     roomTopic: "Git",
-    roomId: 2
-  }]
+    description: "A Room to discuss git and versioning systems",
+    roomId: "098367",
+  },
+    {
+        roomTopic: "Git",
+        description: "A Room to discuss git and versioning systems",
+        roomId: "09836"
+      },
+      {
+        roomTopic: "Git",
+        description: "A Room to discuss git and versioning systems",
+        roomId: "08367"
+      },
+      {
+        roomTopic: "Git",
+        description: "A Room to discuss git and versioning systems",
+        roomId: "0967"
+      }
+  ]
+
+
 
 const RoomList: React.FC = () => {
-type CardProps = React.ComponentProps<typeof Card>
+
+const cards = rooms.map(room => <RoomCard key={room.roomId} id = {room.roomId} topic = {room.roomTopic} description={room.description} />);
+
 return (
-   
+    <>
+    <div className="flex w-full justify-center p-12 text-center"> 
+    <div>
+    <div className="text-6xl mb-4">Get your Bantr on!</div>
+    <div className="text-center">Choose a chat room to start.</div>
+    <div className="mb-4">Don't see one you like?  </div>
+    <Button>Create your own</Button>
+    </div>
 
 
-    <Card className={cn("w-[380px]")}>
-      <CardHeader>
-        <CardTitle>{}</CardTitle>
-        <CardDescription>You have 3 unread messages.</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className=" flex items-center space-x-4 rounded-md border p-4">
-         
-        </div>
-        <div>
-          
-        </div>
-      </CardContent>
-      <CardFooter>
-     
-      </CardFooter>
-    </Card>
+{!cards.length ? (
+    <div className="flex flex-col justify-center w-full h-full items-center">
+        <div className="mb-4"> No Rooms available to join. </div>
+        <Button>Create one here</Button>
+  </div>
+   ):(
+    <>
   
+    <div className="flex flex-wrap w-full h-full justify-center">
+{cards}
+</div>
+
+  </>
   )
 }
+</div>
+  </>
+  
+)}
 
 
 
