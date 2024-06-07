@@ -19,6 +19,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/lib/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/lib/ui/select';
 
 type SocketOptions = {
   query: {
@@ -31,11 +40,14 @@ export default function Room() {
   const params = useParams<{ id: string }>();
   const messageRef = useRef<HTMLInputElement>(null);
   const [username, setUsername] = useState<string>('');
+  const [language, setLanguage] = useState<string>('');
   const [showPopup, setShowPopup] = useState<boolean>(true);
   const [messages, setMessages] = useState<string[]>([]);
 
   useEffect(() => {
     //create new websocket connection with host server and set socket to new socket instance
+    if (!params?.id) return;
+
     socket.current = io({
       query: { roomId: params.id },
     } as SocketOptions);
@@ -44,13 +56,16 @@ export default function Room() {
       console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
+
     socket.current.on('room-join-confirm', (confirmation: string) => {
       console.log(confirmation);
     });
+
     socket.current.on('user-left-room', (notification: string) => {
       console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
+
     socket.current.on('new-message', (message: string) => {
       console.log(`Someone sent a message: ${message}`);
       setMessages((prevMessages) => [...prevMessages, message]);
@@ -71,21 +86,22 @@ export default function Room() {
     };
   }, [params.id]);
 
-  const handleNameSubmit = () => {
+  const handleSubmit = () => {
     if (username && socket.current) {
       socket.current.emit('set-username', username);
       setShowPopup(false);
     }
   };
 
+  const handleLanguageChange = (value: string) => {
+    setLanguage((prevLanguage) => value);
+    console.log('>>> current Language Preference: ', value);
+  };
+
   const handleSendMessage = () => {
     const message = messageRef.current?.value;
     if (message && socket.current) {
       socket.current.emit('send-message', { username, message });
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        `${username}: ${message}`,
-      ]);
       if (messageRef.current) messageRef.current.value = '';
     }
   };
@@ -98,20 +114,88 @@ export default function Room() {
             <DialogHeader>
               <DialogTitle>Enter your name</DialogTitle>
             </DialogHeader>
-            <div className='flex items-center space-x-2'>
-              <Input
-                id='name'
-                type='text'
-                value={username}
-                placeholder='Your name'
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
+            <Input
+              id='name'
+              type='text'
+              value={username}
+              placeholder='Your name'
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Select value={language} onValueChange={handleLanguageChange}>
+              <SelectTrigger className=''>
+                <SelectValue placeholder='Select your preferred language' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Indo-European</SelectLabel>
+                  <SelectItem value='English'>English</SelectItem>
+                  <SelectItem value='Spanish'>Spanish</SelectItem>
+                  <SelectItem value='Hindi'>Hindi</SelectItem>
+                  <SelectItem value='Bengali'>Bengali</SelectItem>
+                  <SelectItem value='Russian'>Russian</SelectItem>
+                  <SelectItem value='Portuguese'>Portuguese</SelectItem>
+                  <SelectItem value='German'>German</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Sino-Tibetan</SelectLabel>
+                  <SelectItem value='Mandarin'>Mandarin</SelectItem>
+                  <SelectItem value='Cantonese'>Cantonese</SelectItem>
+                  <SelectItem value='Tibetan'>Tibetan</SelectItem>
+                  <SelectItem value='Burmese'>Burmese</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Afro-Asiatic</SelectLabel>
+                  <SelectItem value='Arabic'>Arabic</SelectItem>
+                  <SelectItem value='Hebrew'>Hebrew</SelectItem>
+                  <SelectItem value='Amharic'>Amharic</SelectItem>
+                  <SelectItem value='Somali'>Somali</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Niger-Congo</SelectLabel>
+                  <SelectItem value='Swahili'>Swahili</SelectItem>
+                  <SelectItem value='Yoruba'>Yoruba</SelectItem>
+                  <SelectItem value='Igbo'>Igbo</SelectItem>
+                  <SelectItem value='Zulu'>Zulu</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Austronesian</SelectLabel>
+                  <SelectItem value='Indonesian'>Indonesian</SelectItem>
+                  <SelectItem value='Tagalog'>Tagalog</SelectItem>
+                  <SelectItem value='Maori'>Maori</SelectItem>
+                  <SelectItem value='Dravidian'>Dravidian</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Austronesian</SelectLabel>
+                  <SelectItem value='Indonesian'>Indonesian</SelectItem>
+                  <SelectItem value='Tagalog'>Tagalog</SelectItem>
+                  <SelectItem value='Maori'>Maori</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Dravidian</SelectLabel>
+                  <SelectItem value='Tamil'>Tamil</SelectItem>
+                  <SelectItem value='Telugu'>Telugu</SelectItem>
+                  <SelectItem value='Kannada'>Kannada</SelectItem>
+                  <SelectItem value='Malayalam'>Malayalam</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Turkic</SelectLabel>
+                  <SelectItem value='Turkish'>Turkish</SelectItem>
+                  <SelectItem value='Uzbek'>Uzbek</SelectItem>
+                  <SelectItem value='Kazakh'>Kazakh</SelectItem>
+                </SelectGroup>
+                <SelectGroup>
+                  <SelectLabel>Uralic</SelectLabel>
+                  <SelectItem value='Finnish'>Finnish</SelectItem>
+                  <SelectItem value='Hungarian'>Hungarian</SelectItem>
+                  <SelectItem value='Estonian'>Estonian</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             <DialogFooter className='sm:justify-end'>
               <Button
                 type='button'
                 variant='secondary'
-                onClick={handleNameSubmit}
+                onClick={handleSubmit}
                 className='bg-black text-white hover:bg-gray-300 hover:text-black'
               >
                 Submit
