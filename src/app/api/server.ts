@@ -33,7 +33,6 @@ app.prepare().then(() => {
 
     // Set user name
     socket.on('set-username', (username) => {
-    socket.on('set-username', (username) => {
       socket.username = username;
       socket.broadcast.to(roomId).emit('new-user-joined', `${username} has joined the room`);
     });
@@ -48,8 +47,7 @@ app.prepare().then(() => {
       io.to(roomId).emit('user-left-room', `${username} left room.`);
     });
   });
-      });
-
+     
   //use next app router to handle all routes
   server.all('*', (req, res) => {
     return handle(req, res);
