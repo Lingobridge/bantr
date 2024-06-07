@@ -26,6 +26,11 @@ type SocketOptions = {
   };
 };
 
+interface ChatMessage {
+    username: string,
+    message: string
+}
+
 export default function Room() {
   const socket = useRef<Socket | null>(null);
   const params = useParams<{ id: string }>();
@@ -41,29 +46,31 @@ export default function Room() {
     } as SocketOptions);
 
     socket.current.on('new-user-joined', (notification: string) => {
-      console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
     socket.current.on('room-join-confirm', (confirmation: string) => {
-      console.log(confirmation);
+      setMessages((prevMessages) => [...prevMessages, confirmation]);
     });
     socket.current.on('user-left-room', (notification: string) => {
-      console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
-    socket.current.on('new-message', (message: string) => {
-      console.log(`Someone sent a message: ${message}`);
-      setMessages((prevMessages) => [...prevMessages, message]);
+    socket.current.on('new-message', async (newMessage: ChatMessage) => {
+      const payload = {
+          q: newMessage.message,
+          target: 'es',
+          format: 'text'
+      };
+      //TODO: add error handler
+      const result = await fetch('/api/translate', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+      });
+      const { translation: translatedMessage } = await result.json();
+      setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translatedMessage}`]);
     });
-
-    //testing out sending a client message after connecting to a room
-    // setTimeout(() => {
-    //   if (socket.current)
-    //     socket.current.emit(
-    //       'client-message',
-    //       'Client is sending a test message'
-    //     );
-    // }, 1000);
 
     return () => {
       //disconnect socket when Room unmounts
@@ -79,12 +86,13 @@ export default function Room() {
   };
 
   const handleSendMessage = () => {
-    const message = messageRef.current?.value;
+    const message = messageRef.current?.value;   
+
     if (message && socket.current) {
       socket.current.emit('send-message', { username, message });
       setMessages((prevMessages) => [
         ...prevMessages,
-        `${username}: ${message}`,
+        `${username}: ${message}`
       ]);
       if (messageRef.current) messageRef.current.value = '';
     }
