@@ -2,12 +2,24 @@
 
 import { io, Socket } from 'socket.io-client';
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { AiOutlineAudio } from 'react-icons/ai';
 import { MdAddCircleOutline } from 'react-icons/md';
 import { AiTwotoneSmile } from 'react-icons/ai';
 import { AiOutlineBars } from 'react-icons/ai';
 import { FiSend } from 'react-icons/fi';
+import {
+  Keyboard,
+  LogOut,
+  Mail,
+  MessageSquare,
+  Plus,
+  PlusCircle,
+  Settings,
+  User,
+  UserPlus,
+  Users,
+} from 'lucide-react';
 
 import { Input } from '@/lib/ui/input';
 import { Button } from '@/lib/ui/button';
@@ -28,6 +40,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/lib/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/lib/ui/dropdown-menu';
 
 type SocketOptions = {
   query: {
@@ -38,6 +64,7 @@ type SocketOptions = {
 export default function Room() {
   const socket = useRef<Socket | null>(null);
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const messageRef = useRef<HTMLInputElement>(null);
   const [username, setUsername] = useState<string>('');
   const [language, setLanguage] = useState<string>('');
@@ -71,15 +98,6 @@ export default function Room() {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
-    //testing out sending a client message after connecting to a room
-    // setTimeout(() => {
-    //   if (socket.current)
-    //     socket.current.emit(
-    //       'client-message',
-    //       'Client is sending a test message'
-    //     );
-    // }, 1000);
-
     return () => {
       //disconnect socket when Room unmounts
       if (socket.current) socket.current.disconnect();
@@ -103,6 +121,14 @@ export default function Room() {
     if (message && socket.current) {
       socket.current.emit('send-message', { username, message });
       if (messageRef.current) messageRef.current.value = '';
+    }
+  };
+
+  const handleLeaveRoom = () => {
+    if (socket.current) {
+      socket.current.emit('leave-room', { roomId: params.id });
+      socket.current.disconnect();
+      router.push('/');
     }
   };
 
@@ -210,14 +236,88 @@ export default function Room() {
           <div className='font-base text-lg'>Group Chat Room</div>
         </div>
         <div className='fixed right-4 w-12 justify-end'>
-          <AiOutlineBars className='w-10 text-center text-2xl justify-end' />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className='h-12 bg-slate-400 border mr-4 rounded-none'>
+                <AiOutlineBars className='w-10 text-center text-2xl justify-end caret-yellow-900' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className='w-56'>
+              <DropdownMenuLabel>Preference</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <User className='mr-2 h-4 w-4' />
+                  <span>Username</span>
+                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className='mr-2 h-4 w-4' />
+                  <span>Language</span>
+                  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Keyboard className='mr-2 h-4 w-4' />
+                  <span>Keyboard shortcuts</span>
+                  <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <Users className='mr-2 h-4 w-4' />
+                  <span>Team</span>
+                </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <UserPlus className='mr-2 h-4 w-4' />
+                    <span>Invite users</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem>
+                        <Mail className='mr-2 h-4 w-4' />
+                        <span>Email</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <MessageSquare className='mr-2 h-4 w-4' />
+                        <span>Message</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <PlusCircle className='mr-2 h-4 w-4' />
+                        <span>More...</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+                <DropdownMenuItem>
+                  <Plus className='mr-2 h-4 w-4' />
+                  <span>New Team</span>
+                  <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <a
+                  href='/'
+                  onClick={handleLeaveRoom}
+                  className='flex flex-row justify-center items-center'
+                >
+                  <LogOut className='mr-2 h-4 w-4' />
+                  <span>Leave</span>
+                </a>
+                <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       <div className='h-96 overflow-y-auto p-4'>
         {messages.map((msg, index) => (
           <div key={index} className='mb-2'>
-            {msg}
+            <span>{msg}</span>
           </div>
         ))}
       </div>
