@@ -55,11 +55,18 @@ import {
   DropdownMenuTrigger,
 } from '@/lib/ui/dropdown-menu';
 
+import { languages } from '@/lib/languages';
+
 type SocketOptions = {
   query: {
     roomId: string;
   };
 };
+
+interface ChatMessage {
+    username: string,
+    message: string
+}
 
 export default function Room() {
   const socket = useRef<Socket | null>(null);
@@ -80,29 +87,40 @@ export default function Room() {
     } as SocketOptions);
 
     socket.current.on('new-user-joined', (notification: string) => {
-      console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
 
     socket.current.on('room-join-confirm', (confirmation: string) => {
-      console.log(confirmation);
+      setMessages((prevMessages) => [...prevMessages, confirmation]);
     });
 
     socket.current.on('user-left-room', (notification: string) => {
-      console.log(notification);
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
+    socket.current.on('new-message', async (newMessage: ChatMessage) => {
 
-    socket.current.on('new-message', (message: string) => {
-      console.log(`Someone sent a message: ${message}`);
-      setMessages((prevMessages) => [...prevMessages, message]);
+      const payload = {
+          q: newMessage.message,
+          target: languages[language],
+          format: 'text'
+      };
+      //TODO: add error handler
+      const result = await fetch('/api/translate', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+      });
+      const { translation: translatedMessage } = await result.json();
+      setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translatedMessage}`]);
     });
 
     return () => {
       //disconnect socket when Room unmounts
       if (socket.current) socket.current.disconnect();
     };
-  }, [params.id]);
+  }, [params.id, language]);
 
   const handleSubmit = () => {
     if (username && socket.current) {
@@ -117,7 +135,8 @@ export default function Room() {
   };
 
   const handleSendMessage = () => {
-    const message = messageRef.current?.value;
+    const message = messageRef.current?.value;   
+
     if (message && socket.current) {
       socket.current.emit('send-message', { username, message });
       if (messageRef.current) messageRef.current.value = '';
@@ -164,9 +183,10 @@ export default function Room() {
                 </SelectGroup>
                 <SelectGroup>
                   <SelectLabel>Sino-Tibetan</SelectLabel>
-                  <SelectItem value='Mandarin'>Mandarin</SelectItem>
-                  <SelectItem value='Cantonese'>Cantonese</SelectItem>
-                  <SelectItem value='Tibetan'>Tibetan</SelectItem>
+                  {/* <SelectItem value='Mandarin'>Mandarin</SelectItem> */}
+                  {/* <SelectItem value='Cantonese'>Cantonese</SelectItem> */}
+                  <SelectItem value='Chinese'>Chinese</SelectItem>
+                  {/* <SelectItem value='Tibetan'>Tibetan</SelectItem> */}
                   <SelectItem value='Burmese'>Burmese</SelectItem>
                 </SelectGroup>
                 <SelectGroup>
@@ -183,13 +203,13 @@ export default function Room() {
                   <SelectItem value='Igbo'>Igbo</SelectItem>
                   <SelectItem value='Zulu'>Zulu</SelectItem>
                 </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Austronesian</SelectLabel>
-                  <SelectItem value='Indonesian'>Indonesian</SelectItem>
-                  <SelectItem value='Tagalog'>Tagalog</SelectItem>
-                  <SelectItem value='Maori'>Maori</SelectItem>
-                  <SelectItem value='Dravidian'>Dravidian</SelectItem>
-                </SelectGroup>
+                {/* <SelectGroup> */}
+                  {/* <SelectLabel>Austronesian</SelectLabel> */}
+                  {/* <SelectItem value='Indonesian'>Indonesian</SelectItem> */}
+                  {/* <SelectItem value='Tagalog'>Tagalog</SelectItem> */}
+                  {/* <SelectItem value='Maori'>Maori</SelectItem> */}
+                  {/* <SelectItem value='Dravidian'>Dravidian</SelectItem> */}
+                {/* </SelectGroup> */}
                 <SelectGroup>
                   <SelectLabel>Austronesian</SelectLabel>
                   <SelectItem value='Indonesian'>Indonesian</SelectItem>

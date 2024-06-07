@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/translate": "^8.3.0",
     "@nextui-org/button": "^2.0.33",
     "@nextui-org/react": "^2.4.1",
     "@radix-ui/react-dialog": "^1.0.5",
