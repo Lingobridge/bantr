@@ -29,6 +29,8 @@ import {
   SelectValue,
 } from '@/lib/ui/select';
 
+import { languages } from '@/lib/languages';
+
 type SocketOptions = {
   query: {
     roomId: string;
@@ -69,9 +71,10 @@ export default function Room() {
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
     socket.current.on('new-message', async (newMessage: ChatMessage) => {
+
       const payload = {
           q: newMessage.message,
-          target: 'es',
+          target: languages[language],
           format: 'text'
       };
       //TODO: add error handler
@@ -90,7 +93,7 @@ export default function Room() {
       //disconnect socket when Room unmounts
       if (socket.current) socket.current.disconnect();
     };
-  }, [params.id]);
+  }, [params.id, language]);
 
   const handleSubmit = () => {
     if (username && socket.current) {
@@ -145,9 +148,10 @@ export default function Room() {
                 </SelectGroup>
                 <SelectGroup>
                   <SelectLabel>Sino-Tibetan</SelectLabel>
-                  <SelectItem value='Mandarin'>Mandarin</SelectItem>
-                  <SelectItem value='Cantonese'>Cantonese</SelectItem>
-                  <SelectItem value='Tibetan'>Tibetan</SelectItem>
+                  {/* <SelectItem value='Mandarin'>Mandarin</SelectItem> */}
+                  {/* <SelectItem value='Cantonese'>Cantonese</SelectItem> */}
+                  <SelectItem value='Chinese'>Chinese</SelectItem>
+                  {/* <SelectItem value='Tibetan'>Tibetan</SelectItem> */}
                   <SelectItem value='Burmese'>Burmese</SelectItem>
                 </SelectGroup>
                 <SelectGroup>
@@ -164,13 +168,13 @@ export default function Room() {
                   <SelectItem value='Igbo'>Igbo</SelectItem>
                   <SelectItem value='Zulu'>Zulu</SelectItem>
                 </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Austronesian</SelectLabel>
-                  <SelectItem value='Indonesian'>Indonesian</SelectItem>
-                  <SelectItem value='Tagalog'>Tagalog</SelectItem>
-                  <SelectItem value='Maori'>Maori</SelectItem>
-                  <SelectItem value='Dravidian'>Dravidian</SelectItem>
-                </SelectGroup>
+                {/* <SelectGroup> */}
+                  {/* <SelectLabel>Austronesian</SelectLabel> */}
+                  {/* <SelectItem value='Indonesian'>Indonesian</SelectItem> */}
+                  {/* <SelectItem value='Tagalog'>Tagalog</SelectItem> */}
+                  {/* <SelectItem value='Maori'>Maori</SelectItem> */}
+                  {/* <SelectItem value='Dravidian'>Dravidian</SelectItem> */}
+                {/* </SelectGroup> */}
                 <SelectGroup>
                   <SelectLabel>Austronesian</SelectLabel>
                   <SelectItem value='Indonesian'>Indonesian</SelectItem>

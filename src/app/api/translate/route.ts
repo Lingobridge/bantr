@@ -8,8 +8,6 @@ interface TranslationPayload {
     format?: string
 } 
 
-const translateClient = v2.Translate;
-
 export async function POST(req: Request) {
 
   dotenv.config();
