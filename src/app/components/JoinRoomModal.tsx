@@ -22,14 +22,14 @@ import { Button } from '@/lib/ui/button';
 interface JoinRoomModalProps {
   showPopup: boolean;
   setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
-  setUsername: React.Dispatch<React.SetStateAction<string>>;
+  setMyUsername: React.Dispatch<React.SetStateAction<string>>;
   handleSubmit: () => void;
-  username: string;
+  myUsername: string;
   language: string;
   handleLanguageChange: (value: string) => void;
 }
 
-export default function JoinRoomModal({ showPopup, setShowPopup, setUsername, handleSubmit, username, language, handleLanguageChange}: JoinRoomModalProps): React.JSX.Element {
+export default function JoinRoomModal({ showPopup, setShowPopup, setMyUsername, handleSubmit, myUsername, language, handleLanguageChange}: JoinRoomModalProps): React.JSX.Element {
   return (
     <>
       <Dialog open={showPopup} onOpenChange={setShowPopup}>
@@ -40,9 +40,9 @@ export default function JoinRoomModal({ showPopup, setShowPopup, setUsername, ha
           <Input
             id='name'
             type='text'
-            value={username}
+            value={myUsername}
             placeholder='Your name'
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setMyUsername(e.target.value)}
           />
           <Select value={language} onValueChange={handleLanguageChange}>
             <SelectTrigger className=''>
