@@ -109,7 +109,7 @@ export default function Room(): React.JSX.Element {
         
         if (response.ok) {
           const { translation } = await response.json();
-          setMessages((prevMessages) => [...prevMessages, { username: newMessage.username, message: newMessage.message }]);
+          setMessages((prevMessages) => [...prevMessages, { username: newMessage.username, message: translation }]);
         } else {
           const { error } = await response.json();
           console.log(`Translation was unsucessful: ${error}`);
