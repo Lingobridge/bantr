@@ -42,6 +42,7 @@ import {
 import { languages } from '@/lib/languages';
 
 import JoinRoomModal from '@/app/components/JoinRoomModal';
+import LanguageModal from '../../components/LanguageModal';
 
 type SocketOptions = {
   query: {
@@ -62,6 +63,7 @@ export default function Room(): React.JSX.Element {
   const [myUsername, setMyUsername] = useState<string>('');
   const [language, setLanguage] = useState<string>('');
   const [showPopup, setShowPopup] = useState<boolean>(true);
+  const [languagePopup, setLanguagePopup] = useState<boolean>(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
@@ -200,7 +202,7 @@ export default function Room(): React.JSX.Element {
                   <span>Username</span>
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguagePopup(true)}>
                   <Settings className='mr-2 h-4 w-4' />
                   <span>Language</span>
                   <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
@@ -286,6 +288,17 @@ export default function Room(): React.JSX.Element {
           </div>
         ))}
       </div>
+
+      {languagePopup && (
+        <>
+          <LanguageModal
+            showPopup={languagePopup}
+            setShowPopup={setLanguagePopup}
+            language={language}
+            handleLanguageChange={handleLanguageChange}
+          />
+        </>
+      )}
 
       <div className='bottom-0 h-16 w-full flex flex-row justify-center items-center bg-slate-200 border'>
         <AiOutlineAudio className='w-12 text-center text-2xl mx-2' />
