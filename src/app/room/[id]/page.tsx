@@ -23,23 +23,7 @@ import {
 
 import { Input } from '@/lib/ui/input';
 import { Button } from '@/lib/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/lib/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/lib/ui/select';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,7 +50,7 @@ type SocketOptions = {
 };
 
 interface ChatMessage {
-    username: string,
+    username?: string,
     message: string
 }
 
@@ -75,10 +59,10 @@ export default function Room(): React.JSX.Element {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const messageRef = useRef<HTMLInputElement>(null);
-  const [username, setUsername] = useState<string>('');
+  const [myUsername, setMyUsername] = useState<string>('');
   const [language, setLanguage] = useState<string>('');
   const [showPopup, setShowPopup] = useState<boolean>(true);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
     //create new websocket connection with host server and set socket to new socket instance
@@ -97,19 +81,20 @@ export default function Room(): React.JSX.Element {
   useEffect(() => {
     if (!socket.current) return;
 
-    const handleNewUserJoined = (notification: string) => {
+    const handleNewUserJoined = (notification: ChatMessage ) => {
       setMessages((prevMessages) => [...prevMessages, notification]);
     }
-    const handleRoomJoinConfirm = (confirmation: string) => {
+    const handleRoomJoinConfirm = (confirmation: ChatMessage) => {
       setMessages((prevMessages) => [...prevMessages, confirmation]);
     }
-    const handleUserLeftRoom = (notification: string) => {
+    const handleUserLeftRoom = (notification: ChatMessage) => {
       setMessages((prevMessages) => [...prevMessages, notification]);
     }
     const handleNewMessage = async (newMessage: ChatMessage) => {   
+      
       const payload = {
           q: newMessage.message,
-          target: languages[language],
+          target: languages[language] || 'en',
           format: 'text'
       };
 
@@ -124,7 +109,7 @@ export default function Room(): React.JSX.Element {
         
         if (response.ok) {
           const { translation } = await response.json();
-          setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translation}`]);
+          setMessages((prevMessages) => [...prevMessages, { username: newMessage.username, message: newMessage.message }]);
         } else {
           const { error } = await response.json();
           console.log(`Translation was unsucessful: ${error}`);
@@ -150,8 +135,8 @@ export default function Room(): React.JSX.Element {
   }, [language]);
 
   const handleSubmit = () => {
-    if (username && socket.current) {
-      socket.current.emit('set-username', username);
+    if (myUsername && socket.current) {
+      socket.current.emit('set-username', myUsername);
       setShowPopup(false);
     }
   };
@@ -164,28 +149,28 @@ export default function Room(): React.JSX.Element {
     const message = messageRef.current?.value;   
 
     if (message && socket.current) {
-      socket.current.emit('send-message', { username, message });
+      socket.current.emit('send-message', { username: myUsername, message });
       if (messageRef.current) messageRef.current.value = '';
     }
   };
 
   const handleLeaveRoom = () => {
     if (socket.current) {
-      socket.current.emit('leave-room', { roomId: params.id, username });
+      socket.current.emit('leave-room', { roomId: params.id, username: myUsername });
       socket.current.disconnect();
       router.push('/');
     }
   };
 
   return (
-    <main>
+    <main className='h-full flex flex-col'>
       {showPopup && (
         <JoinRoomModal 
           showPopup={showPopup} 
           setShowPopup={setShowPopup} 
-          setUsername={setUsername} 
+          setMyUsername={setMyUsername} 
           handleSubmit={handleSubmit} 
-          username={username} 
+          myUsername={myUsername} 
           language={language} 
           handleLanguageChange={handleLanguageChange}
         />
@@ -273,15 +258,20 @@ export default function Room(): React.JSX.Element {
         </div>
       </div>
 
-      <div className='h-96 overflow-y-auto p-4'>
-        {messages.map((msg, index) => (
-          <div key={index} className='mb-2'>
-            <span>{msg}</span>
+      <div className='flex-1 overflow-y-auto p-4'>
+        {messages.map(({ username, message }, index) => (
+          <div key={index} className={`flex ${username === myUsername ? 'justify-end' : 'justify-start'} mb-2`}>
+            <div className='mb-3 w-1/3'>
+              <div className='flex flex-col'>
+                <p className='text-xs text-gray-400 pl-1 pb-1'>{username}</p>
+                <p className={`text-lg rounded-lg ${username === myUsername ? 'bg-teal-200' : 'bg-blue-300'} p-2`}>{message}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className='fixed bottom-0 h-16 w-full flex flex-row justify-center items-center bg-slate-200 border'>
+      <div className='bottom-0 h-16 w-full flex flex-row justify-center items-center bg-slate-200 border'>
         <AiOutlineAudio className='w-12 text-center text-2xl mx-2' />
         <div className='w-11/12 flex flex-row justify-center items-center'>
           <Input

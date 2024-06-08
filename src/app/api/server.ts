@@ -31,22 +31,22 @@ app.prepare().then(() => {
     //Create (or join) room channel and confirm back to client.
     const roomId = socket.handshake.query.roomId;
     socket.join(roomId);
-    socket.emit('room-join-confirm', `You have joined room: ${roomId}`);
+    socket.emit('room-join-confirm', { username: 'Room Administrator', message: `You have joined room: ${roomId}` });
 
     // Set user name
     socket.on('set-username', (username) => {
       socket.username = username;
-      socket.broadcast.to(roomId).emit('new-user-joined', `${username} has joined the room`);
+      socket.broadcast.to(roomId).emit('new-user-joined', { username: 'Room Administrator', message: `${username} has joined the room`});
     });
 
     // Handle client messages
     socket.on('send-message', ({ username, message }) => {
-      socket.broadcast.to(roomId).emit('new-message', { username, message });
+      io.to(roomId).emit('new-message', { username, message });
     });
 
     //Handle user leaving room
     socket.on('leave-room', ({ roomId, username }) => {
-      socket.broadcast.to(roomId).emit('user-left-room', `${username} left the room.`);
+      socket.broadcast.to(roomId).emit('user-left-room', { username: 'Room Administrator', message: `${username} left the room.` });
     });
 
     // Handle disconnect
