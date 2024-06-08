@@ -1,39 +1,44 @@
+'use client'
 
+import { useEffect, useState } from "react";
 import RoomCard from "./Components/RoomCard"
 import { Button } from '@/lib/ui/button';
-  const rooms = [
-    {
-    roomTopic: "Dogs",
-    description: "A Room to discuss why dogs are better than cats",
-    roomId: "12345"
-  },
-  {
-    roomTopic: "Git",
-    description: "A Room to discuss git and versioning systems",
-    roomId: "098367",
-  },
-    {
-        roomTopic: "Git",
-        description: "A Room to discuss git and versioning systems",
-        roomId: "09836"
-      },
-      {
-        roomTopic: "Git",
-        description: "A Room to discuss git and versioning systems",
-        roomId: "08367"
-      },
-      {
-        roomTopic: "Git",
-        description: "A Room to discuss git and versioning systems",
-        roomId: "0967"
-      }
-  ]
+
+
+
 
 
 
 const RoomList: React.FC = () => {
+  const [rooms, setRooms] = useState([]);
 
-const cards = rooms.map(room => <RoomCard key={room.roomId} id = {room.roomId} topic = {room.roomTopic} description={room.description} />);
+  useEffect(()=>{
+    async function getData(){
+    try {
+      const response = await fetch('/api/getRooms', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+      });
+      
+      if (response.ok) {
+       const {data} = await response.json()
+       setRooms(data)
+     
+      } else {
+      
+      }
+    } catch (error) {
+      console.log(`An error occured when calling /api/translate: ${error}`);
+    }
+
+  }
+  getData()
+  },[])
+
+
+const cards = rooms.map(room => <RoomCard key={room.room_id} id = {room.room_id} topic = {room.roomTopic} description={room.description} />);
 
 return (
     <>
