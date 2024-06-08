@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import supabase from '@/lib/supabaseClient';
 
-export default async function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   console.log('Attempting to retrieve all Rooms from "rooms" table in database...');
 
   try {
@@ -22,5 +22,4 @@ export default async function GET(req: NextRequest) {
   }
 }
 
-// Export the get function as the handler for GET requests
-export { GET };
+
