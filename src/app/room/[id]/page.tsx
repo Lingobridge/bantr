@@ -57,6 +57,8 @@ import {
 
 import { languages } from '@/lib/languages';
 
+import JoinRoomModal from '@/app/components/JoinRoomModal';
+
 type SocketOptions = {
   query: {
     roomId: string;
@@ -68,7 +70,7 @@ interface ChatMessage {
     message: string
 }
 
-export default function Room() {
+export default function Room(): React.JSX.Element {
   const socket = useRef<Socket | null>(null);
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -86,41 +88,66 @@ export default function Room() {
       query: { roomId: params.id },
     } as SocketOptions);
 
-    socket.current.on('new-user-joined', (notification: string) => {
-      setMessages((prevMessages) => [...prevMessages, notification]);
-    });
+    return () => {
+      //disconnect socket when Room unmounts
+      if (socket.current) socket.current.disconnect();
+    };
+  }, [params.id]);
 
-    socket.current.on('room-join-confirm', (confirmation: string) => {
+  useEffect(() => {
+    if (!socket.current) return;
+
+    const handleNewUserJoined = (notification: string) => {
+      setMessages((prevMessages) => [...prevMessages, notification]);
+    }
+    const handleRoomJoinConfirm = (confirmation: string) => {
       setMessages((prevMessages) => [...prevMessages, confirmation]);
-    });
-
-    socket.current.on('user-left-room', (notification: string) => {
+    }
+    const handleUserLeftRoom = (notification: string) => {
       setMessages((prevMessages) => [...prevMessages, notification]);
-    });
-    socket.current.on('new-message', async (newMessage: ChatMessage) => {
-
+    }
+    const handleNewMessage = async (newMessage: ChatMessage) => {   
       const payload = {
           q: newMessage.message,
           target: languages[language],
           format: 'text'
       };
-      //TODO: add error handler
-      const result = await fetch('/api/translate', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-      });
-      const { translation: translatedMessage } = await result.json();
-      setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translatedMessage}`]);
-    });
+
+      try {
+        const response = await fetch('/api/translate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          const { translation } = await response.json();
+          setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translation}`]);
+        } else {
+          const { error } = await response.json();
+          console.log(`Translation was unsucessful: ${error}`);
+        }
+      } catch (error) {
+        console.log(`An error occured when calling /api/translate: ${error}`);
+      }
+    }
+
+    socket.current.on('new-user-joined', handleNewUserJoined);
+    socket.current.on('room-join-confirm', handleRoomJoinConfirm);
+    socket.current.on('user-left-room', handleUserLeftRoom);
+    socket.current.on('new-message', handleNewMessage);
 
     return () => {
-      //disconnect socket when Room unmounts
-      if (socket.current) socket.current.disconnect();
+      //remove event listeners
+      if (!socket.current) return;
+      socket.current.off('new-user-joined', handleNewUserJoined);
+      socket.current.off('room-join-confirm', handleRoomJoinConfirm);
+      socket.current.off('user-left-room', handleUserLeftRoom);
+      socket.current.off('new-message', handleNewMessage);
     };
-  }, [params.id, language]);
+  }, [language]);
 
   const handleSubmit = () => {
     if (username && socket.current) {
@@ -131,7 +158,6 @@ export default function Room() {
 
   const handleLanguageChange = (value: string) => {
     setLanguage((prevLanguage) => value);
-    console.log('>>> current Language Preference: ', value);
   };
 
   const handleSendMessage = () => {
@@ -145,7 +171,7 @@ export default function Room() {
 
   const handleLeaveRoom = () => {
     if (socket.current) {
-      socket.current.emit('leave-room', { roomId: params.id });
+      socket.current.emit('leave-room', { roomId: params.id, username });
       socket.current.disconnect();
       router.push('/');
     }
@@ -154,103 +180,16 @@ export default function Room() {
   return (
     <main>
       {showPopup && (
-        <Dialog open={showPopup} onOpenChange={setShowPopup}>
-          <DialogContent className='sm:max-w-md'>
-            <DialogHeader>
-              <DialogTitle>Enter your name</DialogTitle>
-            </DialogHeader>
-            <Input
-              id='name'
-              type='text'
-              value={username}
-              placeholder='Your name'
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className=''>
-                <SelectValue placeholder='Select your preferred language' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Indo-European</SelectLabel>
-                  <SelectItem value='English'>English</SelectItem>
-                  <SelectItem value='Spanish'>Spanish</SelectItem>
-                  <SelectItem value='Hindi'>Hindi</SelectItem>
-                  <SelectItem value='Bengali'>Bengali</SelectItem>
-                  <SelectItem value='Russian'>Russian</SelectItem>
-                  <SelectItem value='Portuguese'>Portuguese</SelectItem>
-                  <SelectItem value='German'>German</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Sino-Tibetan</SelectLabel>
-                  {/* <SelectItem value='Mandarin'>Mandarin</SelectItem> */}
-                  {/* <SelectItem value='Cantonese'>Cantonese</SelectItem> */}
-                  <SelectItem value='Chinese'>Chinese</SelectItem>
-                  {/* <SelectItem value='Tibetan'>Tibetan</SelectItem> */}
-                  <SelectItem value='Burmese'>Burmese</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Afro-Asiatic</SelectLabel>
-                  <SelectItem value='Arabic'>Arabic</SelectItem>
-                  <SelectItem value='Hebrew'>Hebrew</SelectItem>
-                  <SelectItem value='Amharic'>Amharic</SelectItem>
-                  <SelectItem value='Somali'>Somali</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Niger-Congo</SelectLabel>
-                  <SelectItem value='Swahili'>Swahili</SelectItem>
-                  <SelectItem value='Yoruba'>Yoruba</SelectItem>
-                  <SelectItem value='Igbo'>Igbo</SelectItem>
-                  <SelectItem value='Zulu'>Zulu</SelectItem>
-                </SelectGroup>
-                {/* <SelectGroup> */}
-                  {/* <SelectLabel>Austronesian</SelectLabel> */}
-                  {/* <SelectItem value='Indonesian'>Indonesian</SelectItem> */}
-                  {/* <SelectItem value='Tagalog'>Tagalog</SelectItem> */}
-                  {/* <SelectItem value='Maori'>Maori</SelectItem> */}
-                  {/* <SelectItem value='Dravidian'>Dravidian</SelectItem> */}
-                {/* </SelectGroup> */}
-                <SelectGroup>
-                  <SelectLabel>Austronesian</SelectLabel>
-                  <SelectItem value='Indonesian'>Indonesian</SelectItem>
-                  <SelectItem value='Tagalog'>Tagalog</SelectItem>
-                  <SelectItem value='Maori'>Maori</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Dravidian</SelectLabel>
-                  <SelectItem value='Tamil'>Tamil</SelectItem>
-                  <SelectItem value='Telugu'>Telugu</SelectItem>
-                  <SelectItem value='Kannada'>Kannada</SelectItem>
-                  <SelectItem value='Malayalam'>Malayalam</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Turkic</SelectLabel>
-                  <SelectItem value='Turkish'>Turkish</SelectItem>
-                  <SelectItem value='Uzbek'>Uzbek</SelectItem>
-                  <SelectItem value='Kazakh'>Kazakh</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>Uralic</SelectLabel>
-                  <SelectItem value='Finnish'>Finnish</SelectItem>
-                  <SelectItem value='Hungarian'>Hungarian</SelectItem>
-                  <SelectItem value='Estonian'>Estonian</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <DialogFooter className='sm:justify-end'>
-              <Button
-                type='button'
-                variant='secondary'
-                onClick={handleSubmit}
-                className='bg-black text-white hover:bg-gray-300 hover:text-black'
-              >
-                Submit
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <JoinRoomModal 
+          showPopup={showPopup} 
+          setShowPopup={setShowPopup} 
+          setUsername={setUsername} 
+          handleSubmit={handleSubmit} 
+          username={username} 
+          language={language} 
+          handleLanguageChange={handleLanguageChange}
+        />
       )}
-
       <div className='h-12 w-full flex flex-row items-center bg-slate-200 border'>
         <div className='flex grow items-center justify-center'>
           <div className='font-base text-lg'>Group Chat Room</div>
@@ -350,7 +289,12 @@ export default function Room() {
             type='text'
             ref={messageRef}
             className='w-full border-t overflow-y-auto'
-            placeholder='Type a message...'
+            placeholder='Type a message...' 
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSendMessage();
+              }
+            }}
           ></Input>
           <FiSend
             className='w-10 text-center text-xl'
