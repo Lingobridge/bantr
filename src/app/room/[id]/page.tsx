@@ -153,7 +153,7 @@ export default function Room() {
 
   const handleLeaveRoom = () => {
     if (socket.current) {
-      socket.current.emit('leave-room', { roomId: params.id });
+      socket.current.emit('leave-room', { roomId: params.id, username });
       socket.current.disconnect();
       router.push('/');
     }
