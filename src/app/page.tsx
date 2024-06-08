@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Copy } from 'lucide-react';
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogClose,
@@ -21,6 +22,7 @@ import Link from 'next/link';
 // import socket from '../lib/socket';
 
 const Home: React.FC = () => {
+  const router = useRouter();
   const [isOpenStart, setIsOpenStart] = useState(false);
   const [isOpenJoin, setIsOpenJoin] = useState(false);
   const [roomId, setRoomId] = useState<string>('');
@@ -136,15 +138,15 @@ const Home: React.FC = () => {
 
       <div className='flex justify-center items-center p-2'>
         <Dialog>
-          <DialogTrigger asChild>
+        
             <Button
               variant='outline'
-              onClick={handleJoinAConversation}
+              onClick={() => router.push('/room-list')}
               className='w-48 rounded-lg border-2'
             >
               Join a Conversation{' '}
             </Button>
-          </DialogTrigger>
+         
           <DialogContent className='sm:max-w-md'>
             <DialogHeader>
               <DialogTitle>Enter room code</DialogTitle>
