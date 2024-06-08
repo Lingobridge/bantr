@@ -110,10 +110,6 @@ export default function Room(): React.JSX.Element {
           const { translation } = await response.json();
           setMessages(prevMessages => [
             ...prevMessages,
-            { username: newMessage.username, message: newMessage.message },
-          ]);
-          setMessages(prevMessages => [
-            ...prevMessages,
             { username: newMessage.username, message: translation },
           ]);
         } else {
@@ -181,14 +177,14 @@ export default function Room(): React.JSX.Element {
           handleLanguageChange={handleLanguageChange}
         />
       )}
-      <div className='h-12 w-full flex flex-row items-center bg-slate-200 border'>
+      <div className='h-12 w-full flex flex-row items-center bg-black border'>
         <div className='flex grow items-center justify-center'>
-          <div className='font-base text-lg'>Group Chat Room</div>
+          <div className='font-base text-lg text-white'>Group Chat Room</div>
         </div>
         <div className='fixed right-4 w-12 justify-end'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className='h-12 bg-slate-400 border mr-4 rounded-none'>
+              <Button className='bg-black mr-4 rounded-none hover:bg-gray-700'>
                 <AiOutlineBars className='w-10 text-center text-2xl justify-end caret-yellow-900' />
               </Button>
             </DropdownMenuTrigger>
@@ -275,7 +271,7 @@ export default function Room(): React.JSX.Element {
                 <p className='text-xs text-gray-400 pl-1 pb-1'>{username}</p>
                 <p
                   className={`text-lg rounded-lg ${
-                    username === myUsername ? 'bg-teal-200' : 'bg-blue-300'
+                    username === myUsername ? 'bg-blue-400 text-white' : 'bg-gray-200'
                   } p-2`}
                 >
                   {message}
