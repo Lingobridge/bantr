@@ -44,9 +44,14 @@ app.prepare().then(() => {
       socket.broadcast.to(roomId).emit('new-message', { username, message });
     });
 
+    //Handle user leaving room
+    socket.on('leave-room', ({ roomId, username }) => {
+      socket.broadcast.to(roomId).emit('user-left-room', `${username} left the room.`);
+    });
+
     // Handle disconnect
-    socket.on('disconnect', (username) => {
-      io.to(roomId).emit('user-left-room', `${username} left room.`);
+    //passing username into this callback was causing unexpected behavior, so I took it out
+    socket.on('disconnect', () => {
     });
   });
      
