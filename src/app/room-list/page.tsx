@@ -24,6 +24,7 @@ const RoomList: React.FC = () => {
       
       if (response.ok) {
        const {data} = await response.json()
+       console.log(data)
        setRooms(data)
      
       } else {
@@ -37,8 +38,12 @@ const RoomList: React.FC = () => {
   getData()
   },[])
 
-
-const cards = rooms.map(room => <RoomCard key={room.room_id} id = {room.room_id} topic = {room.roomTopic} description={room.description} />);
+interface Room {
+  room_id: string,
+  topic: string,
+  description: string
+}
+const cards = rooms.map((room: Room) => <RoomCard key={room.room_id} id = {room.room_id} topic = {room.topic} description={room.description} />);
 
 return (
     <>
