@@ -27,8 +27,10 @@ const Home: React.FC = () => {
   const [isOpenJoin, setIsOpenJoin] = useState(false);
   const [roomId, setRoomId] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
-
   const roomIdRef = useRef<HTMLInputElement>(null);
+  const topicRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLInputElement>(null);
+
   const handleCopy = () => {
     if (roomIdRef.current) {
       roomIdRef.current.select();
@@ -71,29 +73,47 @@ const Home: React.FC = () => {
           </DialogTrigger>
           <DialogContent className='sm:max-w-md'>
             <DialogHeader>
-              <DialogTitle>Share link</DialogTitle>
+              <DialogTitle>Create your room</DialogTitle>
               <DialogDescription>
                 Anyone who has this link will be able to join this room.
               </DialogDescription>
             </DialogHeader>
-            <div className='flex items-center space-x-2'>
-              <div className='grid flex-1 gap-2'>
+            <div className='flex flex-col items-center space-y-2'>
+              <Input
+                id='topic'
+                type='text'
+                placeholder='What is the room topic'
+                ref={topicRef}
+                className='w-full'
+              />
+              <Input
+                id='description'
+                type='text'
+                placeholder='Description for the room topic'
+                ref={descriptionRef}
+                className='w-full'
+              />
+              <div className='flex flex-col space-y-2 w-full'>
                 <Label htmlFor='link' className='sr-only'>
                   Link
                 </Label>
-                <Input
-                  id='link'
-                  type='text'
-                  defaultValue={roomId}
-                  ref={roomIdRef}
-                  readOnly
-                />
+                <div className='flex gap-2'>
+                  <Input
+                    id='link'
+                    type='text'
+                    defaultValue={roomId}
+                    ref={roomIdRef}
+                    readOnly
+                    className='flex-1'
+                  />
+                  <Button onClick={handleCopy} size='sm' className='px-3'>
+                    <span className='sr-only'>Copy</span>
+                    <Copy className='h-4 w-4' />
+                  </Button>
+                </div>
               </div>
-              <Button onClick={handleCopy} size='sm' className='px-3'>
-                <span className='sr-only'>Copy</span>
-                <Copy className='h-4 w-4' />
-              </Button>
             </div>
+
             <DialogFooter className='sm:justify-end'>
               <DialogClose asChild>
                 <div className='flex space-x-2'>
