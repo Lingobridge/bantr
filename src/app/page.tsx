@@ -18,7 +18,6 @@ import { Label } from '../lib/ui/label';
 import { Button } from '../lib/ui/button';
 import axios from 'axios';
 import Link from 'next/link';
-import { Description } from '@radix-ui/react-dialog';
 
 // import socket from '../lib/socket';
 
@@ -53,22 +52,6 @@ const Home: React.FC = () => {
 
   const handleJoinAConversation = () => {
     setIsOpenJoin(true);
-  };
-
-  const handleSaveRoom = async () => {
-    try {
-      const response = await axios.post('/api/saveRoom', {
-        roomId: roomId,
-        topic: topicRef.current?.value,
-        description: descriptionRef.current?.value,
-      });
-
-      if (response) {
-        console.log('>>> data that saved in the database: ', response.data);
-      }
-    } catch (err) {
-      console.error('catch error in saveroom: ', err);
-    }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,7 +125,6 @@ const Home: React.FC = () => {
                       type='button'
                       variant='secondary'
                       className='bg-black text-white hover:bg-gray-300 hover:text-black'
-                      onClick={handleSaveRoom}
                     >
                       Submit
                     </Button>
