@@ -97,23 +97,32 @@ export default function Room() {
     socket.current.on('user-left-room', (notification: string) => {
       setMessages((prevMessages) => [...prevMessages, notification]);
     });
-    socket.current.on('new-message', async (newMessage: ChatMessage) => {
-
+    socket.current.on('new-message', async (newMessage: ChatMessage) => {   
       const payload = {
           q: newMessage.message,
           target: languages[language],
           format: 'text'
       };
-      //TODO: add error handler
-      const result = await fetch('/api/translate', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-      });
-      const { translation: translatedMessage } = await result.json();
-      setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translatedMessage}`]);
+
+      try {
+        const response = await fetch('/api/translate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          const { translation } = await response.json();
+          setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translation}`]);
+        } else {
+          const { error } = await response.json();
+          console.log(`Translation was unsucessful: ${error}`);
+        }
+      } catch (error) {
+        console.log(`An error occured when calling /api/translate: ${error}`);
+      }
     });
 
     return () => {
@@ -131,7 +140,6 @@ export default function Room() {
 
   const handleLanguageChange = (value: string) => {
     setLanguage((prevLanguage) => value);
-    console.log('>>> current Language Preference: ', value);
   };
 
   const handleSendMessage = () => {
