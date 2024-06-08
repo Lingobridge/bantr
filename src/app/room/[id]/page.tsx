@@ -84,13 +84,14 @@ export default function Room(): React.JSX.Element {
     if (!socket.current) return;
 
     const handleNewUserJoined = (notification: ChatMessage) => {
-      setMessages((prevMessages) => [...prevMessages, notification]);
+      setMessages(prevMessages => [...prevMessages, notification]);
     };
     const handleRoomJoinConfirm = (confirmation: ChatMessage) => {
-      setMessages((prevMessages) => [...prevMessages, confirmation]);
+      setMessages(prevMessages => [...prevMessages, confirmation]);
     };
     const handleUserLeftRoom = (notification: ChatMessage) => {
-      setMessages((prevMessages) => [...prevMessages, notification]);
+      setMessages(prevMessages => [...prevMessages, notification]);
+
     };
     const handleNewMessage = async (newMessage: ChatMessage) => {
       const payload = {
@@ -110,7 +111,8 @@ export default function Room(): React.JSX.Element {
 
         if (response.ok) {
           const { translation } = await response.json();
-          setMessages((prevMessages) => [
+
+          setMessages(prevMessages => [
             ...prevMessages,
             { username: newMessage.username, message: translation },
           ]);
@@ -146,7 +148,7 @@ export default function Room(): React.JSX.Element {
   };
 
   const handleLanguageChange = (value: string) => {
-    setLanguage((prevLanguage) => value);
+    setLanguage(prevLanguage => value);
   };
 
   const handleSendMessage = () => {
@@ -182,14 +184,14 @@ export default function Room(): React.JSX.Element {
           handleLanguageChange={handleLanguageChange}
         />
       )}
-      <div className='h-12 w-full flex flex-row items-center bg-slate-200 border'>
+      <div className='h-12 w-full flex flex-row items-center bg-black border'>
         <div className='flex grow items-center justify-center'>
-          <div className='font-base text-lg'>Group Chat Room</div>
+          <div className='font-base text-lg text-white'>Group Chat Room</div>
         </div>
         <div className='fixed right-4 w-12 justify-end'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className='h-12 bg-slate-400 border mr-4 rounded-none'>
+              <Button className='bg-black mr-4 rounded-none hover:bg-gray-700'>
                 <AiOutlineBars className='w-10 text-center text-2xl justify-end caret-yellow-900' />
               </Button>
             </DropdownMenuTrigger>
@@ -269,16 +271,14 @@ export default function Room(): React.JSX.Element {
         {messages.map(({ username, message }, index) => (
           <div
             key={index}
-            className={`flex ${
-              username === myUsername ? 'justify-end' : 'justify-start'
-            } mb-2`}
+            className={`flex ${username === myUsername ? 'justify-end' : 'justify-start'} mb-2`}
           >
             <div className='mb-3 w-1/3'>
               <div className='flex flex-col'>
                 <p className='text-xs text-gray-400 pl-1 pb-1'>{username}</p>
                 <p
                   className={`text-lg rounded-lg ${
-                    username === myUsername ? 'bg-teal-200' : 'bg-blue-300'
+                    username === myUsername ? 'bg-blue-400 text-white' : 'bg-gray-200'
                   } p-2`}
                 >
                   {message}
@@ -309,16 +309,13 @@ export default function Room(): React.JSX.Element {
             ref={messageRef}
             className='w-full border-t overflow-y-auto'
             placeholder='Type a message...'
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Enter') {
                 handleSendMessage();
               }
             }}
           ></Input>
-          <FiSend
-            className='w-10 text-center text-xl'
-            onClick={handleSendMessage}
-          />
+          <FiSend className='w-10 text-center text-xl' onClick={handleSendMessage} />
         </div>
 
         <AiTwotoneSmile className='w-10 text-center text-2xl mx-2' />
