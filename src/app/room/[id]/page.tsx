@@ -289,7 +289,12 @@ export default function Room(): React.JSX.Element {
             type='text'
             ref={messageRef}
             className='w-full border-t overflow-y-auto'
-            placeholder='Type a message...'
+            placeholder='Type a message...' 
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSendMessage();
+              }
+            }}
           ></Input>
           <FiSend
             className='w-10 text-center text-xl'
