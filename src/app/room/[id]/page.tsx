@@ -8,18 +8,6 @@ import { MdAddCircleOutline } from 'react-icons/md';
 import { AiTwotoneSmile } from 'react-icons/ai';
 import { AiOutlineBars } from 'react-icons/ai';
 import { FiSend } from 'react-icons/fi';
-import {
-  Keyboard,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  User,
-  UserPlus,
-  Users,
-} from 'lucide-react';
 
 import { Input } from '@/lib/ui/input';
 import { Button } from '@/lib/ui/button';
@@ -40,24 +28,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/lib/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@/lib/ui/dropdown-menu';
 
 import { languages } from '@/lib/languages';
 
 import JoinRoomModal from '@/app/components/JoinRoomModal';
+import Sidebar from '@/app/components/Sidebar';
 
 type SocketOptions = {
   query: {
@@ -66,8 +41,8 @@ type SocketOptions = {
 };
 
 interface ChatMessage {
-    username: string,
-    message: string
+  username: string;
+  message: string;
 }
 
 export default function Room(): React.JSX.Element {
@@ -99,32 +74,35 @@ export default function Room(): React.JSX.Element {
 
     const handleNewUserJoined = (notification: string) => {
       setMessages((prevMessages) => [...prevMessages, notification]);
-    }
+    };
     const handleRoomJoinConfirm = (confirmation: string) => {
       setMessages((prevMessages) => [...prevMessages, confirmation]);
-    }
+    };
     const handleUserLeftRoom = (notification: string) => {
       setMessages((prevMessages) => [...prevMessages, notification]);
-    }
-    const handleNewMessage = async (newMessage: ChatMessage) => {   
+    };
+    const handleNewMessage = async (newMessage: ChatMessage) => {
       const payload = {
-          q: newMessage.message,
-          target: languages[language],
-          format: 'text'
+        q: newMessage.message,
+        target: languages[language],
+        format: 'text',
       };
 
       try {
         const response = await fetch('/api/translate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         });
-        
+
         if (response.ok) {
           const { translation } = await response.json();
-          setMessages((prevMessages) => [...prevMessages, `${newMessage.username}: ${translation}`]);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            `${newMessage.username}: ${translation}`,
+          ]);
         } else {
           const { error } = await response.json();
           console.log(`Translation was unsucessful: ${error}`);
@@ -132,7 +110,7 @@ export default function Room(): React.JSX.Element {
       } catch (error) {
         console.log(`An error occured when calling /api/translate: ${error}`);
       }
-    }
+    };
 
     socket.current.on('new-user-joined', handleNewUserJoined);
     socket.current.on('room-join-confirm', handleRoomJoinConfirm);
@@ -161,7 +139,7 @@ export default function Room(): React.JSX.Element {
   };
 
   const handleSendMessage = () => {
-    const message = messageRef.current?.value;   
+    const message = messageRef.current?.value;
 
     if (message && socket.current) {
       socket.current.emit('send-message', { username, message });
@@ -169,24 +147,16 @@ export default function Room(): React.JSX.Element {
     }
   };
 
-  const handleLeaveRoom = () => {
-    if (socket.current) {
-      socket.current.emit('leave-room', { roomId: params.id, username });
-      socket.current.disconnect();
-      router.push('/');
-    }
-  };
-
   return (
     <main>
       {showPopup && (
-        <JoinRoomModal 
-          showPopup={showPopup} 
-          setShowPopup={setShowPopup} 
-          setUsername={setUsername} 
-          handleSubmit={handleSubmit} 
-          username={username} 
-          language={language} 
+        <JoinRoomModal
+          showPopup={showPopup}
+          setShowPopup={setShowPopup}
+          setUsername={setUsername}
+          handleSubmit={handleSubmit}
+          username={username}
+          language={language}
           handleLanguageChange={handleLanguageChange}
         />
       )}
@@ -195,81 +165,7 @@ export default function Room(): React.JSX.Element {
           <div className='font-base text-lg'>Group Chat Room</div>
         </div>
         <div className='fixed right-4 w-12 justify-end'>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className='h-12 bg-slate-400 border mr-4 rounded-none'>
-                <AiOutlineBars className='w-10 text-center text-2xl justify-end caret-yellow-900' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='w-56'>
-              <DropdownMenuLabel>Preference</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <User className='mr-2 h-4 w-4' />
-                  <span>Username</span>
-                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className='mr-2 h-4 w-4' />
-                  <span>Language</span>
-                  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Keyboard className='mr-2 h-4 w-4' />
-                  <span>Keyboard shortcuts</span>
-                  <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Users className='mr-2 h-4 w-4' />
-                  <span>Team</span>
-                </DropdownMenuItem>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <UserPlus className='mr-2 h-4 w-4' />
-                    <span>Invite users</span>
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem>
-                        <Mail className='mr-2 h-4 w-4' />
-                        <span>Email</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <MessageSquare className='mr-2 h-4 w-4' />
-                        <span>Message</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <PlusCircle className='mr-2 h-4 w-4' />
-                        <span>More...</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-                <DropdownMenuItem>
-                  <Plus className='mr-2 h-4 w-4' />
-                  <span>New Team</span>
-                  <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <a
-                  href='/'
-                  onClick={handleLeaveRoom}
-                  className='flex flex-row justify-center items-center'
-                >
-                  <LogOut className='mr-2 h-4 w-4' />
-                  <span>Leave</span>
-                </a>
-                <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Sidebar username={username} language={language} />
         </div>
       </div>
 
@@ -289,9 +185,9 @@ export default function Room(): React.JSX.Element {
             type='text'
             ref={messageRef}
             className='w-full border-t overflow-y-auto'
-            placeholder='Type a message...' 
+            placeholder='Type a message...'
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === 'Enter') {
                 handleSendMessage();
               }
             }}
