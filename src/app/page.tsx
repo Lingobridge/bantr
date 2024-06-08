@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Copy } from 'lucide-react';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import {
   Dialog,
   DialogClose,
@@ -18,6 +18,7 @@ import { Label } from '../lib/ui/label';
 import { Button } from '../lib/ui/button';
 import axios from 'axios';
 import Link from 'next/link';
+import { Description } from '@radix-ui/react-dialog';
 
 // import socket from '../lib/socket';
 
@@ -52,6 +53,22 @@ const Home: React.FC = () => {
 
   const handleJoinAConversation = () => {
     setIsOpenJoin(true);
+  };
+
+  const handleSaveRoom = async () => {
+    try {
+      const response = await axios.post('/api/saveRoom', {
+        roomId: roomId,
+        topic: topicRef.current?.value,
+        description: descriptionRef.current?.value,
+      });
+
+      if (response) {
+        console.log('>>> data that saved in the database: ', response.data);
+      }
+    } catch (err) {
+      console.error('catch error in saveroom: ', err);
+    }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +142,7 @@ const Home: React.FC = () => {
                       type='button'
                       variant='secondary'
                       className='bg-black text-white hover:bg-gray-300 hover:text-black'
+                      onClick={handleSaveRoom}
                     >
                       Submit
                     </Button>
@@ -138,15 +156,14 @@ const Home: React.FC = () => {
 
       <div className='flex justify-center items-center p-2'>
         <Dialog>
-        
-            <Button
-              variant='outline'
-              onClick={() => router.push('/room-list')}
-              className='w-48 rounded-lg border-2'
-            >
-              Join a Conversation{' '}
-            </Button>
-         
+          <Button
+            variant='outline'
+            onClick={() => router.push('/room-list')}
+            className='w-48 rounded-lg border-2'
+          >
+            Join a Conversation{' '}
+          </Button>
+
           <DialogContent className='sm:max-w-md'>
             <DialogHeader>
               <DialogTitle>Enter room code</DialogTitle>
