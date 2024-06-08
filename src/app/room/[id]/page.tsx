@@ -23,23 +23,7 @@ import {
 
 import { Input } from '@/lib/ui/input';
 import { Button } from '@/lib/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/lib/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/lib/ui/select';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
