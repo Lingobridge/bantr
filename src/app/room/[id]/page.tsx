@@ -86,18 +86,25 @@ export default function Room() {
       query: { roomId: params.id },
     } as SocketOptions);
 
-    socket.current.on('new-user-joined', (notification: string) => {
-      setMessages((prevMessages) => [...prevMessages, notification]);
-    });
+    return () => {
+      //disconnect socket when Room unmounts
+      if (socket.current) socket.current.disconnect();
+    };
+  }, [params.id]);
 
-    socket.current.on('room-join-confirm', (confirmation: string) => {
+  useEffect(() => {
+    if (!socket.current) return;
+
+    const handleNewUserJoined = (notification: string) => {
+      setMessages((prevMessages) => [...prevMessages, notification]);
+    }
+    const handleRoomJoinConfirm = (confirmation: string) => {
       setMessages((prevMessages) => [...prevMessages, confirmation]);
-    });
-
-    socket.current.on('user-left-room', (notification: string) => {
+    }
+    const handleUserLeftRoom = (notification: string) => {
       setMessages((prevMessages) => [...prevMessages, notification]);
-    });
-    socket.current.on('new-message', async (newMessage: ChatMessage) => {   
+    }
+    const handleNewMessage = async (newMessage: ChatMessage) => {   
       const payload = {
           q: newMessage.message,
           target: languages[language],
@@ -123,13 +130,22 @@ export default function Room() {
       } catch (error) {
         console.log(`An error occured when calling /api/translate: ${error}`);
       }
-    });
+    }
+
+    socket.current.on('new-user-joined', handleNewUserJoined);
+    socket.current.on('room-join-confirm', handleRoomJoinConfirm);
+    socket.current.on('user-left-room', handleUserLeftRoom);
+    socket.current.on('new-message', handleNewMessage);
 
     return () => {
-      //disconnect socket when Room unmounts
-      if (socket.current) socket.current.disconnect();
+      //remove event listeners
+      if (!socket.current) return;
+      socket.current.off('new-user-joined', handleNewUserJoined);
+      socket.current.off('room-join-confirm', handleRoomJoinConfirm);
+      socket.current.off('user-left-room', handleUserLeftRoom);
+      socket.current.off('new-message', handleNewMessage);
     };
-  }, [params.id, language]);
+  }, [language]);
 
   const handleSubmit = () => {
     if (username && socket.current) {
